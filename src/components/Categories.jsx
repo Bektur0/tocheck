@@ -1,16 +1,18 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import data from "./data";
+import data from "../assets/data";
 
 export default function ContainedButtons({ setByBrand }) {
-  let categroyBar = ["All"];
+  let categoryBar = ["All"];
+
   for (let el of data) {
-    if (!categroyBar.includes(el.brand)) {
-      categroyBar.push(el.brand);
+    if (!categoryBar.includes(el.brand)) {
+      categoryBar.push(el.brand);
     }
   }
-  categroyBar.push("cart");
+
+  categoryBar.push("cart");
 
   return (
     <Stack
@@ -18,9 +20,9 @@ export default function ContainedButtons({ setByBrand }) {
       direction="row"
       spacing={4}
     >
-      {categroyBar.map((el) => {
+      {categoryBar.map((el, ind) => {
         return (
-          <Button onClick={() => setByBrand(event)} variant="contained">
+          <Button key={ind} onClick={setByBrand} variant="contained">
             {el}
           </Button>
         );
