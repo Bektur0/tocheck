@@ -5,31 +5,28 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Button, CardActionArea, CardActions } from "@mui/material";
 
-export default function MultiActionAreaCard({ shoes, addToCart }) {
+export default function MultiActionAreaCard({ shoe, addToCart }) {
+  // console.log(shoe);
   return (
     <Card style={{ margin: "30px" }} sx={{ maxWidth: 250 }}>
       <CardActionArea>
         <CardMedia
           component="img"
           height="90"
-          image={shoes.image}
+          image={shoe.image}
           alt="green iguana"
         />
         <CardContent>
           <Typography gutterBottom variant="h6" component="div">
-            {shoes.name}
+            {shoe.name}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            {shoes.price}
+            {shoe.price}
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button
-          onClick={() => addToCart(shoes.id)}
-          size="small"
-          color="primary"
-        >
+        <Button onClick={() => addToCart(shoe.id)} size="small" color="primary">
           Add to cart
         </Button>
       </CardActions>

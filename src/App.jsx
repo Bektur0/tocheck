@@ -1,39 +1,43 @@
-import data from "./components/data";
-import Card from "./components/Card";
+import { useState } from "react";
+import data from "./assets/data";
 import Categories from "./components/Categories";
 import Gender from "./components/Gender";
 import Search from "./components/Search";
-import Cart from "./components/Cart";
-
-import { useState } from "react";
+import DisplayShopCart from "./components/DisplayShopCart";
+import DisplayCard from "./components/DisplayCard";
 
 function App() {
-  const getLocalStorage = JSON.parse(localStorage.getItem("shoes"));
-  const initialTodos = Array.isArray(getLocalStorage) ? getLocalStorage : [];
+  const cartShoesLocalStorage = JSON.parse(localStorage.getItem("cartShoes"));
+  const initialCartShoes = cartShoesLocalStorage || [];
 
-  const [shoesInfo, setShoesInfo] = useState(data);
+  const [shoes, setShoes] = useState(data);
   const [cart, setCart] = useState(false);
-  const [sold, setSold] = useState(initialTodos);
-  console.log(sold);
+  const [cartShoes, setCartShoes] = useState(initialCartShoes);
+
   const updateLocalStorage = (newShoes) => {
     localStorage.setItem("shoes", JSON.stringify(newShoes));
   };
+
   function addToCart(id) {
-    const newData = JSON.parse(JSON.stringify(data));
-    const filteredById = newData.find((el) => el.id === id);
-    // if (filteredById.count) {
-    //   filteredById.count++;
-    // } else {
-    //   filteredById.count = 1;
-    // }
-    updateLocalStorage(sold);
-    setSold([...sold, filteredById]);
+    const newCartShoes = JSON.parse(JSON.stringify(cartShoes));
+    const shoe = newCartShoes.find((s) => s.id === id);
+    const newShoe = data.find((s) => s.id === id);
+
+    if (shoe) {
+      shoe.qty++;
+    } else {
+      newShoe.qty = 1;
+      newCartShoes.push(newShoe);
+    }
+
+    updateLocalStorage(newCartShoes);
+    setCartShoes(newCartShoes);
   }
 
   function setByBrand(event) {
     const newData = JSON.parse(JSON.stringify(data));
     if (event.target.innerText.toLowerCase() === "all") {
-      setShoesInfo(newData);
+      setShoes(newData);
       setCart(false);
     } else if (event.target.innerText.toLowerCase() === "cart") {
       setCart(true);
@@ -41,10 +45,11 @@ function App() {
       const filteredByBrand = newData.filter(
         (el) => el.brand === event.target.innerText.toLowerCase()
       );
-      setShoesInfo(filteredByBrand);
+      setShoes(filteredByBrand);
       setCart(false);
     }
   }
+
   function setByGender(event) {
     const newData = JSON.parse(JSON.stringify(data));
 
@@ -52,60 +57,45 @@ function App() {
       (el) => el.gender === event.target.innerText.toLowerCase()
     );
     setCart(false);
-    setShoesInfo(filteredByGender);
+    setShoes(filteredByGender);
   }
+
   function setBySearch(event) {
     const newData = JSON.parse(JSON.stringify(data));
     const filteredBySearch = newData.filter((el) =>
       el.name.toLowerCase().includes(event.target.value.trim())
     );
-    setShoesInfo(filteredBySearch);
+    setShoes(filteredBySearch);
   }
 
   function removeFromCart(id) {
-    const newData = JSON.parse(JSON.stringify(sold));
-    const remove = newData.filter((el) => el.id !== id);
+    const newData = JSON.parse(JSON.stringify(cartShoes));
+    const shoe = newData.find((s) => s.id === id);
+    let filteredData;
 
-    setSold(remove);
-    updateLocalStorage(remove);
+    if (shoe.qty > 1) {
+      shoe.qty--;
+      filteredData = newData;
+    } else {
+      filteredData = newData.filter((shoe) => shoe.id !== id);
+    }
+
+    setCartShoes(filteredData);
+    updateLocalStorage(filteredData);
   }
+
   return (
     <>
       <Gender setByGender={setByGender} />
       <Search setBySearch={setBySearch} />
       <Categories setByBrand={setByBrand} />
       {cart ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "left",
-            flexWrap: "wrap",
-          }}
-        >
-          {sold.map((el) => {
-            return (
-              <Cart
-                removeFromCart={removeFromCart}
-                key={el.id}
-                soldShoes={el}
-              />
-            );
-          })}
-        </div>
+        <DisplayShopCart
+          cartShoes={cartShoes}
+          removeFromCart={removeFromCart}
+        />
       ) : (
-        <div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "left",
-              flexWrap: "wrap",
-            }}
-          >
-            {shoesInfo.map((el) => {
-              return <Card addToCart={addToCart} key={el.id} shoes={el} />;
-            })}
-          </div>
-        </div>
+        <DisplayCard shoes={shoes} addToCart={addToCart} />
       )}
     </>
   );

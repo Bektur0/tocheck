@@ -1,13 +1,14 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import data from "./data";
+import data from "../assets/data";
 
 export default function ContainedButtons({ setByGender }) {
-  let categroyBar = [];
+  let categoryBar = [];
+
   for (let el of data) {
-    if (!categroyBar.includes(el.gender)) {
-      categroyBar.push(el.gender);
+    if (!categoryBar.includes(el.gender)) {
+      categoryBar.push(el.gender);
     }
   }
 
@@ -17,9 +18,9 @@ export default function ContainedButtons({ setByGender }) {
       direction="row"
       spacing={4}
     >
-      {categroyBar.map((el) => {
+      {categoryBar.map((el, ind) => {
         return (
-          <Button onClick={() => setByGender(event)} variant="contained">
+          <Button key={ind} onClick={setByGender} variant="contained">
             {el}
           </Button>
         );
